@@ -3,4 +3,4 @@ The main part of this project is the ChEBIplot R package and the KNIME workflow 
 
 The KNIME workflow should be configured with the search query, number of results pages to download and the output file name.
 
-The original version that was used to generate the figures in the *Analytical Chemistry* emplyed for-loops that, though clear, are inefficient in R. These constructs should be fully vectorized or implemented in C++ using [Rcpp](http://www.rcpp.org/cpp "Rcpp's homepage").
+The original version that was used to generate the figures in the *Analytical Chemistry* [paper](https://pubs.acs.org/journal/ancham) emplyed for-loops that, though perhaps clear, are inefficient in R. These constructs should be fully vectorized or implemented in C++ using [Rcpp](http://www.rcpp.org/cpp "Rcpp's homepage").
