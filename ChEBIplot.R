@@ -19,10 +19,10 @@
 # are tables of mass and logP, the "root" scaling and whether or not the comparisons should be
 # relative (normalized) or absolute.
 #
-# Most parameters are hard-coded, giving a fixed but generally visually pleasing output.
+# Most parameters are hard-coded or have defaults giving a fixed but visually pleasing result.
 #
 
-# 2D gaussian blur kernel, SDx=2, SDy=1
+# 2D gaussian blur kernel, SDx=2, SDy=1 (corresponding to uncertainty in mass and logP predictions)
 WDW<-matrix(c(3.435E-09, 2.2213E-08, 1.08546E-07, 4.17925E-07, 1.25836E-06, 2.96532E-06, 5.46921E-06, 7.89638E-06, 8.92459E-06, 7.89638E-06, 5.46921E-06, 2.96532E-06, 1.25836E-06, 4.17925E-07, 1.08546E-07, 2.2213E-08, 3.435E-09,
               8.9655E-08, 5.79769E-07, 2.8331E-06, 1.0908E-05, 3.28436E-05, 7.73962E-05, 0.000142749, 0.000206099, 0.000232936, 0.000206099, 0.000142749, 7.73962E-05, 3.28436E-05, 1.0908E-05, 2.8331E-06, 5.79769E-07, 8.9655E-08,
               9.0897E-07, 5.87801E-06, 2.87235E-05, 0.000110591, 0.000332986, 0.000784684, 0.001447262, 0.00208954, 0.002361625, 0.00208954, 0.001447262, 0.000784684, 0.000332986, 0.000110591, 2.87235E-05, 5.87801E-06, 9.0897E-07,
@@ -38,49 +38,76 @@ scaling<-function(intensity, root)
   return(intensity^(1/root))
 }
 
-plot1<-function(S1, root, normalize)
+plot1<-function(S1, root=4, normalize=TRUE, xmin=-5.5, xmax=10.5, ymin=0, ymax=1000, blur=TRUE)
 {
+  if(xmin< -5.5) xmin<- -5.5
+  if(xmin>10.5) xmin<-10.5
+  if(xmax< -5.5) xmax<- -5.5
+  if(xmax>10.5) xmax<-10.5
+  if(xmin>=xmax) xmax<-xmin
+  
+  if(ymin<0) ymin<-0
+  if(ymin>1600) ymin<-1600
+  if(ymax<0) ymax<-0
+  if(ymax>1600) ymax<-1600
+  if(ymin>=ymax) ymax<-ymin
+  
   M<-matrix(0, nrow=264, ncol=260)
   M1<-matrix(0, nrow=280, ncol=268)
   TEMP1<-matrix(0, nrow=280, ncol=268)
   S1x<-floor(16*S1$V2+96)
   S1y<-floor((S1$V1+6.25)/6.25); S1y[is.na(S1y)]<-FALSE
- 
+  
   max_s1<-0;
   for(x in 9:264)
   {
-    for(y in 5:260) 
+    for(y in 5:260)
     {
       M1[x,y]<-sum((S1x==x-8)*(S1y==y-4))
     }
   }
   
-  for(x in 9:272)
-  {
-    for(y in 5:264) 
+  if(blur) {
+    for(x in 9:272)
     {
-      for(i in -8:8) for(j in -4:4) TEMP1[x,y]<-TEMP1[x,y]+M1[x+i,y+j]*WDW[i+9,j+5]
+      for(y in 5:264)
+      {
+        for(i in -8:8) for(j in -4:4) TEMP1[x,y]<-TEMP1[x,y]+M1[x+i,y+j]*WDW[i+9,j+5]
+      }
     }
   }
   
+  if(!blur) TEMP1<-M1
   if(normalize==TRUE) TEMP1<-TEMP1/length(S1x)
   M1<-scaling(TEMP1, root)
   max_s1<-max(M1)
   
-  plot(0, 0, type="n", xaxs="i", yaxs="i", col="black", xlim=c(-5.5,10.5), ylim=c(0,1600), xlab=expression('log'['10']*'P'['ow']), ylab='mass (Da)', xaxp=c(-5,10,15), yaxp=c(0,1600,16), las=1, bg="transparent")
+  plot(0, 0, type="n", xaxs="i", yaxs="i", col="black", xlim=c(xmin,xmax), ylim=c(ymin,ymax), xlab=expression('log'['10']*'P'['ow']), ylab='mass (Da)', xaxp=c(-5,10,15), yaxp=c(0,1600,16), las=1, bg="transparent")
   
   for(x in 1:264)
   {
     for(y in 1:260) 
     { 
-      M[x,y]<- rgb(M1[x+8,y+4]/max_s1, M1[x+8,y+4]/max_s1, M1[x+8,y+4]/max_s1)
+      M[x,y]<-rgb(M1[x+8,y+4]/max_s1, M1[x+8,y+4]/max_s1, M1[x+8,y+4]/max_s1)
       rect(x/16-6-0.03125, y*6.25-6.25-3.125, x/16-5.9375-0.03125, y*6.25-3.125, angle=0, col=M[x,y], border=NA)
     }
   }
 }
 
-plot2<- function(S1, S2, root, normalize)
+plot2<-function(S1, S2, root=4, normalize=TRUE, xmin=-5.5, xmax=10.5, ymin=0, ymax=1000, blur=TRUE)
 {
+  if(xmin< -5.5) xmin<- -5.5
+  if(xmin>10.5) xmin<-10.5
+  if(xmax< -5.5) xmax<- -5.5
+  if(xmax>10.5) xmax<-10.5
+  if(xmin>=xmax) xmax<-xmin
+  
+  if(ymin<0) ymin<-0
+  if(ymin>1600) ymin<-1600
+  if(ymax<0) ymax<-0
+  if(ymax>1600) ymax<-1600
+  if(ymin>=ymax) ymax<-ymin
+  
   M<-matrix(0, nrow=264, ncol=260)
   M1<-matrix(0, nrow=280, ncol=268)
   M2<-matrix(0, nrow=280, ncol=268)
@@ -101,19 +128,22 @@ plot2<- function(S1, S2, root, normalize)
     }
   }
   
-  for(x in 9:272)
-  {
-    for(y in 5:264) 
+  if(blur) {
+    for(x in 9:272)
     {
-      for(i in -8:8) for(j in -4:4) {TEMP1[x,y]<-TEMP1[x,y]+M1[x+i,y+j]*WDW[i+9,j+5]; TEMP2[x,y]<-TEMP2[x,y]+M2[x+i,y+j]*WDW[i+9,j+5]}
+      for(y in 5:264) 
+      {
+        for(i in -8:8) for(j in -4:4) {TEMP1[x,y]<-TEMP1[x,y]+M1[x+i,y+j]*WDW[i+9,j+5]; TEMP2[x,y]<-TEMP2[x,y]+M2[x+i,y+j]*WDW[i+9,j+5]}
+      }
     }
   }
   
+  if(!blur) {TEMP1<-M1; TEMP2<-M2}
   if(normalize==TRUE) {TEMP1<-TEMP1/length(S1x); TEMP2<-TEMP2/length(S2x)}
   M1<-scaling(TEMP1, root); M2<-scaling(TEMP2, root)
   max_s1<-max(M1); max_s2<-max(M2)
   
-  plot(0, 0, type="n", xaxs="i", yaxs="i", col="black", xlim=c(-5.5,10.5), ylim=c(0,1600), xlab=expression('log'['10']*'P'['ow']), ylab='mass (Da)', xaxp=c(-5,10,15), yaxp=c(0,1600,16), las=1)
+  plot(0, 0, type="n", xaxs="i", yaxs="i", col="black", xlim=c(xmin,xmax), ylim=c(ymin,ymax), xlab=expression('log'['10']*'P'['ow']), ylab='mass (Da)', xaxp=c(-5,10,15), yaxp=c(0,1600,16), las=1)
   
   for(x in 1:264)
   {
@@ -125,8 +155,20 @@ plot2<- function(S1, S2, root, normalize)
   }
 }
 
-plot3<- function(S1, S2, S3, root, normalize)
+plot3<-function(S1, S2, S3, root=4, normalize=TRUE, xmin=-5.5, xmax=10.5, ymin=0, ymax=1000, blur=TRUE)
 {
+  if(xmin< -5.5) xmin<- -5.5
+  if(xmin>10.5) xmin<-10.5
+  if(xmax< -5.5) xmax<- -5.5
+  if(xmax>10.5) xmax<-10.5
+  if(xmin>=xmax) xmax<-xmin
+  
+  if(ymin<0) ymin<-0
+  if(ymin>1600) ymin<-1600
+  if(ymax<0) ymax<-0
+  if(ymax>1600) ymax<-1600
+  if(ymin>=ymax) ymax<-ymin
+  
   M<-matrix(0, nrow=264, ncol=260)
   M1<-matrix(0, nrow=280, ncol=268)
   M2<-matrix(0, nrow=280, ncol=268)
@@ -152,24 +194,28 @@ plot3<- function(S1, S2, S3, root, normalize)
     }
   }
   
-  for(x in 9:272)
-  {
-    for(y in 5:264)
+  if(blur) {
+    for(x in 9:272)
     {
-      for(i in -8:8) for(j in -4:4) {TEMP1[x,y]<-TEMP1[x,y]+M1[x+i,y+j]*WDW[i+9,j+5]; TEMP2[x,y]<-TEMP2[x,y]+M2[x+i,y+j]*WDW[i+9,j+5]; TEMP3[x,y]<-TEMP3[x,y]+M3[x+i,y+j]*WDW[i+9,j+5]}
+      for(y in 5:264)
+      {
+        for(i in -8:8) for(j in -4:4) {TEMP1[x,y]<-TEMP1[x,y]+M1[x+i,y+j]*WDW[i+9,j+5]; TEMP2[x,y]<-TEMP2[x,y]+M2[x+i,y+j]*WDW[i+9,j+5]; TEMP3[x,y]<-TEMP3[x,y]+M3[x+i,y+j]*WDW[i+9,j+5]}
+      }
     }
   }
+  
+  if(!blur) {TEMP1<-M1; TEMP2<-M2; TEMP3<-M3}
   if(normalize==TRUE) {TEMP1<-TEMP1/length(S1x); TEMP2<-TEMP2/length(S2x); TEMP3<-TEMP3/length(S3x)}
   M1<-scaling(TEMP1[1:272,1:264], root); M2<-scaling(TEMP2[1:272,1:264], root);  M3<-scaling(TEMP3[1:272,1:264], root)
   max_s1<-max(M1); max_s2<-max(M2); max_s3<-max(M3)
   
-  plot(0, 0, type="n", xaxs="i", yaxs="i", col="black", xlim=c(-5.5,10.5), ylim=c(0,1600), xlab=expression('log'['10']*'P'['ow']), ylab='mass (Da)', xaxp=c(-5,10,15), yaxp=c(0,1600,16), las=1)
-
+  plot(0, 0, type="n", xaxs="i", yaxs="i", col="black", xlim=c(xmin,xmax), ylim=c(ymin,ymax), xlab=expression('log'['10']*'P'['ow']), ylab='mass (Da)', xaxp=c(-5,10,15), yaxp=c(0,1600,16), las=1)
+  
   for(x in 1:264)
   {
     for(y in 1:260) 
     {    
-      M[x,y]<- rgb(M1[x+8,y+4]/max_s1, M2[x+8,y+4]/max_s2, M3[x+8,y+4]/max_s3)
+      M[x,y]<-rgb(M1[x+8,y+4]/max_s1, M2[x+8,y+4]/max_s2, M3[x+8,y+4]/max_s3)
       rect(x/16-6-0.03125, y*6.25-6.25-3.125, x/16-5.9375-0.03125, y*6.25-3.125, angle=0, col=M[x,y], border=NA)
     }
   }
