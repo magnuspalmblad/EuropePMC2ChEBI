@@ -34,7 +34,7 @@ WDW<-matrix(c(3.435E-09, 2.2213E-08, 1.08546E-07, 4.17925E-07, 1.25836E-06, 2.96
               3.435E-09, 2.2213E-08, 1.08546E-07, 4.17925E-07, 1.25836E-06, 2.96532E-06, 5.46921E-06, 7.89638E-06, 8.92459E-06, 7.89638E-06, 5.46921E-06, 2.96532E-06, 1.25836E-06, 4.17925E-07, 1.08546E-07, 2.2213E-08, 3.435E-09), nrow=17, ncol=9, byrow=FALSE)
 
 A<-read.table('ChEBI_counts_2015_to_2017.tsv')
-N<-972037 # the number of unique papers with text mined annotations in the 2015-2017 corpus
+N<-972037 # the number of unique papers with text mined annotations in the 2015-2017 Europe PMC corpus
 
 scaling<-function(intensity, root)
 {
@@ -77,8 +77,8 @@ plot1<-function(S1, root=4, normalize=TRUE, xmin=-5.5, xmax=10.5, ymin=0, ymax=1
   if(tfidf) {
     for(i in 1:length(S1x))
     {
-      x<-S1x[i]-8
-      y<-S1y[i]-4
+      x<-S1x[i]+8
+      y<-S1y[i]+4
       if ( (x>=1) && (x<=280) && (y>=1) && (y<=268) ) M1[x,y]<-M1[x,y]+S1idf[i]
     }
   }
@@ -157,14 +157,14 @@ plot2<-function(S1, S2, root=4, normalize=TRUE, xmin=-5.5, xmax=10.5, ymin=0, ym
   if(tfidf) {
     for(i in 1:length(S1x))
     {
-      x<-S1x[i]-8
-      y<-S1y[i]-4
+      x<-S1x[i]+8
+      y<-S1y[i]+4
       if ( (x>=1) && (x<=280) && (y>=1) && (y<=268) ) M1[x,y]<-M1[x,y]+S1idf[i]
     }
     for(i in 1:length(S2x))
     {
-      x<-S2x[i]-8
-      y<-S2y[i]-4
+      x<-S2x[i]+8
+      y<-S2y[i]+4
       if ( (x>=1) && (x<=280) && (y>=1) && (y<=268) ) M2[x,y]<-M2[x,y]+S2idf[i]
     }
   }
@@ -246,20 +246,20 @@ plot3<-function(S1, S2, S3, root=4, normalize=TRUE, xmin=-5.5, xmax=10.5, ymin=0
   if(tfidf) {
     for(i in 1:length(S1x))
     {
-      x<-S1x[i]-8
-      y<-S1y[i]-4
+      x<-S1x[i]+8
+      y<-S1y[i]+4
       if ( (x>=1) && (x<=280) && (y>=1) && (y<=268) ) M1[x,y]<-M1[x,y]+S1idf[i]
     }
     for(i in 1:length(S2x))
     {
-      x<-S2x[i]-8
-      y<-S2y[i]-4
+      x<-S2x[i]+8
+      y<-S2y[i]+4
       if ( (x>=1) && (x<=280) && (y>=1) && (y<=268) ) M2[x,y]<-M2[x,y]+S2idf[i]
     }
     for(i in 1:length(S3x))
     {
-      x<-S3x[i]-8
-      y<-S3y[i]-4
+      x<-S3x[i]+8
+      y<-S3y[i]+4
       if ( (x>=1) && (x<=280) && (y>=1) && (y<=268) ) M3[x,y]<-M3[x,y]+S3idf[i]
     }
   }
