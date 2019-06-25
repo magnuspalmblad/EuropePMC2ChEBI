@@ -4,4 +4,4 @@ There are a number of relatively easy things that could and should be done next:
 2. Move more hard-coded constants to function header, defining sensible defaults.
 3. Accelerate the plotting by vectorizing loop constructs or refactoring part of the code in C++ using Rcpp.
 4. Match KNIME workflow output to ChEBI plot input (additional filters).
-5. Interactive HTML5 visualization with tooltip revealing and linking to most abundant ChEBI entry in (log P/mass) bin.
+5. Interactive HTML5 visualization with tooltip revealing and linking to most abundant ChEBI entry in (log _P_/mass) bin.
